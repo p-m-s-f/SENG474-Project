@@ -2,3 +2,6 @@
 
 # macOS files
 .DS_Store
+
+# local python enviroment
+.venv/ 
