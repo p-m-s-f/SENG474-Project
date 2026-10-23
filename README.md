@@ -20,7 +20,7 @@ Skip if repository is already cloned.
 
 ### 2. Choose a Python environment
 
-Use your preferred Python environment (`venv`, Conda, etc.).
+Use your preferred Python environment (venv, Conda, etc.).
 
 If you don’t have a preference, create and activate a virtual environment:
 
