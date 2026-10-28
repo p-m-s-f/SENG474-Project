@@ -5,3 +5,8 @@
 
 # local python enviroment
 .venv/ 
+
+# Local dataset images
+/data/**
+!/data/**/
+!/data/**/.gitkeep
