@@ -2,8 +2,8 @@ import csv
 from pathlib import Path
 
 project_root = Path(__file__).resolve().parent.parent
-train_dir = project_root / "data" / "train"
-output = project_root / "train_labels.csv"
+data_dir = project_root / "data"
+output = project_root / "image_labels.csv"
 
 categories = ["no_fire", "fire_low", "fire_medium", "fire_high"]
 image_types = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff"}
@@ -14,7 +14,7 @@ def main():
     filenames = set()
 
     for category in categories:
-        folder = train_dir / category
+        folder = data_dir / category
 
         if not folder.is_dir():
             raise FileNotFoundError(f"Folder not found: {folder}")
@@ -29,7 +29,7 @@ def main():
                 raise ValueError(f"Image listed twice: {image.name}")
 
             filenames.add(image.name)
-            labels.append([image.name, "train", category])
+            labels.append([image.name, category])
             count += 1
 
         print(f"{category}: {count} images")
@@ -39,7 +39,7 @@ def main():
 
     with output.open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(["filename", "split", "label"])
+        writer.writerow(["filename", "label"])
         writer.writerows(labels)
 
     print(f"Exported {len(labels)} labels to {output.name}")
