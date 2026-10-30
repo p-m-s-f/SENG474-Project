@@ -2,7 +2,7 @@ import csv
 from pathlib import Path
 from PIL import Image
 from torchvision import transforms
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 project_root = Path(__file__).resolve().parent.parent
 label_file = project_root / "image_labels.csv"
@@ -50,3 +50,10 @@ if __name__ == "__main__":
     image_tensor, label = dataset[700]
     print(image_tensor.shape)
     print(label)
+
+    loader = DataLoader(dataset, batch_size=4, shuffle=False)
+
+    batch_images, batch_labels = next(iter(loader))
+
+    print(batch_images.shape)
+    print(batch_labels)
