@@ -22,8 +22,8 @@ label_numbers = {
 
 class WildfireDataset(Dataset):
 
-    def __init__(self):
-        with label_file.open("r", newline="", encoding="utf-8") as file:
+    def __init__(self, csv_file=label_file):
+        with Path(csv_file).open("r", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             self.images = list(reader)
 
@@ -44,7 +44,7 @@ class WildfireDataset(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = WildfireDataset()
+    dataset = WildfireDataset(project_root / "splits" / "train.csv")
     print(f"Dataset size: {len(dataset)}")
 
     image_tensor, label = dataset[700]
@@ -57,3 +57,8 @@ if __name__ == "__main__":
 
     print(batch_images.shape)
     print(batch_labels)
+
+    for split in ["train", "val", "test"]:
+        split_dataset = WildfireDataset(project_root / "splits" / f"{split}.csv")
+        image_tensor, label = split_dataset[0]
+        print(f"{split}: {len(split_dataset)} images, sample shape: {image_tensor.shape}")
