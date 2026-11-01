@@ -10,3 +10,7 @@
 /data/**
 !/data/**/
 !/data/**/.gitkeep
+
+#python cache
+__pycache__/
+*.pyc
