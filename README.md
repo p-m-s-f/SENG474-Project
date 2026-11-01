@@ -16,13 +16,11 @@ git clone https://github.com/p-m-s-f/SENG474-Project.git
 cd SENG474-Project
 ```
 
-Skip if repository is already cloned.
+Skip this step if the repository has already been cloned.
 
 ### 2. Choose a Python environment
 
-Use your preferred Python environment (venv, Conda, etc.).
-
-If you don’t have a preference, create and activate a virtual environment:
+If you don’t have a preferred Python environment, create and activate a virtual environment:
 
 **macOS/Linux:**
 
@@ -40,11 +38,13 @@ py -m venv .venv
 
 ### 3. Install dependencies
 
-From the project root, with a python environment active:
+From the project root, with a python environment active, run:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
+
+Note that Pytorch, a crucial package, is incompatible with Intel-based Mac computers.
 
 ### 4. Run the project
 
