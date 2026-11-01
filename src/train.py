@@ -5,9 +5,25 @@ from torch import nn
 from torch.utils.data import DataLoader
 from dataset import WildfireDataset
 from model import build_model
-
+import argparse
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--stage",
+        choices=["detector", "risk"],
+        default="detector",
+    )
+    args = parser.parse_args()
+
+    stage = args.stage
+
+    if stage == "detector":
+        class_names = ["no_fire", "fire"]
+    else:
+        class_names = ["fire_low", "fire_medium", "fire_high"]
+
     random.seed(0)
     torch.manual_seed(0)
 
@@ -25,11 +41,11 @@ def main():
 
     train_dataset = WildfireDataset(
         project_root / "splits" / "train.csv",
-        stage="detector",
+        stage=stage,
     )
     val_dataset = WildfireDataset(
         project_root / "splits" / "val.csv",
-        stage="detector",
+        stage=stage,
     )
 
     generator = torch.Generator().manual_seed(0)
@@ -49,7 +65,7 @@ def main():
     print(f"Training images: {len(train_dataset)}")
     print(f"Validation images: {len(val_dataset)}")
 
-    model = build_model(2).to(device)
+    model = build_model(len(class_names)).to(device)
 
     loss_function = nn.CrossEntropyLoss()
 
@@ -58,7 +74,7 @@ def main():
         lr=0.0001,
     )
 
-    print("Detector ready for training")
+    print(f"{stage.capitalize()} ready for training")
 
     epochs = 5
     best_val_loss = float("inf")
@@ -129,16 +145,16 @@ def main():
                         name: value.detach().cpu()
                         for name, value in model.state_dict().items()
                     },
-                    "stage": "detector",
-                    "num_classes": 2,
-                    "class_names": ["no_fire", "fire"],
+                    "stage": stage,
+                    "num_classes": len(class_names),
+                    "class_names": class_names,
                     "epoch": epoch + 1,
                     "val_loss": average_val_loss,
                     "seed": 0,
                 },
-                checkpoint_dir / "detector_best.pt",
+                checkpoint_dir / f"{stage}_best.pt",
             )
-            print("Saved best detector checkpoint")
+            print(f"Saved best {stage} checkpoint")
 
 if __name__ == "__main__":
     main()
