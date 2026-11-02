@@ -1,13 +1,31 @@
 # SENG474-Project
 
-This repo is home to our SENG 474 term project. Its authors are Parris Mook-Sang-Forbes, Max Patchell, and Varun Manon.
+A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell, and Varun Menon.
 
-Our goal is to classify aerial wildfire images into three operational risk tiers: low, medium, and high. False positive detections are minimized by training a model to differentiate genuine fire development from confounding environmental variables (e.g., fog, weather, terrain, foliage). This ensures critical firefighting resources are deployed based on actual threats rather than algorithmic errors.
+The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
+1. A detector predicts **fire** or **no fire**.
+2. Images predicted as fire are passed to a risk classifier, which predicts **low**, **medium**, or **high** apparent visual risk.
+
+The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
+
+The dataset contains both aerial and ground-based images. Risk labels are manually assigned using visible smoke, flames, and foliage damage. They are visual assessments, not verified operational severity measurements.
+
+## Current status
+
+Implemented:
+
+- CSV label export and duplicate screening.
+- Saved training, validation, and test splits.
+- Dataset preparation from a downloaded Kaggle dataset.
+- Stage-specific image loading and preprocessing.
+- Training and best-checkpoint saving for both models.
+- Single-image prediction.
+- A visual demonstration using validation images.
+- Full-cascade evaluation with saved metrics and predictions.
+- A unified command interface through `src/main.py`.
 
 ## Setup
-
-The initial setup was tested with Python 3.14.7.
 
 ### 1. Clone the repository
 
@@ -16,11 +34,13 @@ git clone https://github.com/p-m-s-f/SENG474-Project.git
 cd SENG474-Project
 ```
 
-Skip this step if the repository has already been cloned.
+If already cloned, open your existing project folder and update it as appropriate.
 
 ### 2. Choose a Python environment
 
-If you don’t have a preferred Python environment, create and activate a virtual environment:
+The initial setup was tested with **Python 3.14.7**, **PyTorch 2.14.1**, and **Torchvision 0.29.1**.
+
+Use your preferred environment. If you do not have one:
 
 **macOS/Linux:**
 
@@ -29,27 +49,256 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-**Windows (PowerShell):**
+**Windows PowerShell:**
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
+Check that your chosen Python version is compatible with the dependencies. The commands above use whichever Python installation they resolve to; they do not install Python 3.14.
+
 ### 3. Install dependencies
 
-From the project root, with a python environment active, run:
+With your environment active:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Note that Pytorch, a crucial package, is incompatible with Intel-based Mac computers.
-
-### 4. Run the project
+Package availability depends on Python version, operating system, and processor architecture. If installation fails, share the error and the outputs of:
 
 ```bash
-python src/main.py
+python --version
+python -m pip --version
 ```
 
-**Current status:** Script prints the project name and installed PyTorch/Torchvision versions.
+The scripts select NVIDIA CUDA when available, otherwise Apple MPS, otherwise CPU. CPU execution is supported but may be slower.
+
+### 4. Check available commands
+
+```bash
+python src/main.py --help
+```
+
+For help with a particular command:
+
+```bash
+python src/main.py prepare --help
+python src/main.py train --help
+python src/main.py predict --help
+python src/main.py demo --help
+python src/main.py evaluate --help
+```
+
+## Prepare the images
+
+Download and extract the [Wildfire Dataset from Kaggle](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset).
+
+The shared `image_labels.csv` contains filenames and manually assigned categories. The preparation script searches the extracted download and copies the required images into the matching project folders.
+
+First check without copying:
+
+```bash
+python src/main.py prepare --source "/path/to/extracted/dataset" --dry-run
+```
+
+Then prepare the files:
+
+```bash
+python src/main.py prepare --source "/path/to/extracted/dataset"
+```
+
+Replace the example path with the actual extracted folder, not the ZIP. Keep the original download separate from the project's `data` folder.
+
+The script preserves the source files, skips identical prepared files, and reports missing or ambiguous filenames. Copying requires additional disk space.
+
+Expected local structure:
+
+```text
+data/
+├── no_fire/
+├── fire_low/
+├── fire_medium/
+└── fire_high/
+```
+
+Images remain local and are excluded from Git.
+
+## Dataset splits
+
+The labelled dataset contains 1,040 images after removing four manually confirmed duplicate copies.
+
+| Category | Train | Validation | Test | Total |
+|---|---:|---:|---:|---:|
+| No fire | 423 | 90 | 92 | 605 |
+| Low | 78 | 16 | 18 | 112 |
+| Medium | 163 | 35 | 36 | 234 |
+| High | 62 | 13 | 14 | 89 |
+| **Total** | **726** | **154** | **160** | **1,040** |
+
+Assignments are stored in `splits/train.csv`, `splits/val.csv`, and `splits/test.csv`. Use these shared files; do not regenerate splits during an experiment.
+
+The detector uses all examples in the selected split. The risk model uses only its fire examples.
+
+## Obtain trained checkpoints
+
+Prediction, demonstration, and evaluation require:
+
+```text
+checkpoints/
+├── detector_best.pt
+└── risk_best.pt
+```
+
+Checkpoint files are excluded from Git. Obtain the baseline checkpoint ZIP from the team and extract the two files into `checkpoints/`, or reproduce training using the commands below.
+
+**Team action:** email/share the baseline checkpoint ZIP and confirm that teammates and markers have access. Add the shared download location here once available.
+
+If the model, preprocessing, labels, or training procedure changes, review whether retraining is required and distribute matching updated checkpoints. Preserve the original weights as a baseline and record the corresponding code commit, settings, and validation results.
+
+Updating GitHub code does not update another person's local checkpoint files.
+
+## Reproduce training
+
+Train the detector:
+
+```bash
+python src/main.py train --stage detector
+```
+
+Train the risk classifier:
+
+```bash
+python src/main.py train --stage risk
+```
+
+Current settings:
+
+- ImageNet-pretrained ResNet-18, with all layers fine-tuned.
+- Input: RGB images resized to 224 × 224 with ImageNet normalization.
+- Optimizer: Adam.
+- Learning rate: 0.0001.
+- Batch size: 16.
+- Epochs: 5.
+- Loss: cross-entropy.
+- Random seed: 0.
+- Checkpoint selection: lowest validation loss.
+
+Training starts fresh and can overwrite the selected stage's checkpoint. Back up existing weights before running comparison experiments.
+
+Seeds help repeatability, but results may differ across hardware and software versions.
+
+## Predict one image
+
+```bash
+python src/main.py predict --image "/path/to/image.jpg"
+```
+
+The image can be outside the dataset and does not need a reference label.
+
+Prediction loads the saved models without training them. Only image pixels are supplied to the networks; folder names do not determine predictions.
+
+## Run the visual demo
+
+```bash
+python src/main.py demo --predicted-category fire_high --seed 0
+```
+
+Available categories:
+
+- `no_fire`
+- `fire_low`
+- `fire_medium`
+- `fire_high`
+
+The demo scans validation images, selects an example predicted as the requested category, and opens it. The terminal prints both the assigned label and prediction.
+
+The seed controls example selection. This prediction-filtered demo does not replace full-set evaluation.
+
+## Evaluate the cascade
+
+During development:
+
+```bash
+python src/main.py evaluate --split val
+```
+
+After model configurations are finalized:
+
+```bash
+python src/main.py evaluate --split test
+```
+
+Keep the test set out of model-selection decisions.
+
+Evaluation includes all images in the selected split, including fires incorrectly rejected by the detector. It reports accuracy, per-class precision/recall/F1, macro-F1, the confusion matrix, false alarms, and missed fires.
+
+Results are saved under:
+
+```text
+outputs/<split>/
+├── predictions.csv
+├── confusion_matrix.csv
+└── metrics.json
+```
+
+Metrics include checkpoint identification information. Rerunning evaluation overwrites results for that split; preserve previous outputs when comparing experiments.
+
+## Initial validation results
+
+Selected detector checkpoint: epoch 2, validation accuracy 94.16%.
+
+Selected risk checkpoint: epoch 3, validation accuracy 75.00% on known fire images.
+
+Full-cascade validation results:
+
+| Metric | Result |
+|---|---:|
+| Accuracy | 83.77% |
+| Macro-F1 | 71.88% |
+| False alarms | 4 of 90 no-fire images |
+| Missed fires | 5 of 64 fire images |
+| Fire detection recall | 92.19% |
+
+These are initial validation results, not final test results.
+
+## Known limitations
+
+- The risk model overfits: training accuracy reaches 100%, while validation performance declines after epoch 3. Selecting an earlier checkpoint does not solve the underlying issue.
+- A fire incorrectly classified as no fire never reaches the risk model.
+- A non-fire image incorrectly passed through receives a fire-risk category.
+- Risk labels are subjective visual assessments.
+- Categories are imbalanced; overall accuracy hides weaker categories. Low-category validation recall is 43.75%.
+- Splitting is by image rather than incident, so related photographs may cross splits.
+- Duplicate screening does not guarantee all related images were identified.
+- Resizing can remove small fire details and distort image proportions.
+- The prototype is not validated for operational firefighting decisions.
+
+## File overview
+
+| File | Purpose |
+|---|---|
+| `src/main.py` | Unified command entry point |
+| `src/prepare_data.py` | Organize downloaded images using shared CSV labels |
+| `src/export_labels.py` | Export labels from locally sorted folders |
+| `src/check_duplicates.py` | Screen exact and visually similar image pairs |
+| `src/split_data.py` | Generate repeatable split assignments |
+| `src/dataset.py` | Load and preprocess images with stage-specific targets |
+| `src/model.py` | Build ResNet-18 with the required output count |
+| `src/train.py` | Train one stage and save its best checkpoint |
+| `src/predict.py` | Load checkpoints and predict one image through the cascade |
+| `src/demo.py` | Display validation examples filtered by prediction |
+| `src/evaluate.py` | Evaluate the full cascade and save results |
+
+`export_labels.py` and `split_data.py` overwrite their CSV outputs. They are preparation utilities, not commands to rerun before every prediction or training run.
+
+## References
+
+- El-Madafri, I., Peña, M., and Olmedo-Torre, N. (2023). *The Wildfire Dataset: Enhancing Deep Learning-Based Forest Fire Detection with a Diverse Evolving Open-Source Dataset Focused on Data Representativeness and a Novel Multi-Task Learning Approach.* https://doi.org/10.3390/f14091697
+- He, K., Zhang, X., Ren, S., and Sun, J. (2016). *Deep Residual Learning for Image Recognition.* https://doi.org/10.1109/CVPR.2016.90
+- [Torchvision ResNet-18 documentation and pretrained weights](https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)
+
+## AI assistance
+
+AI assisted with programming explanations, code development, debugging and formatting.
