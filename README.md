@@ -78,7 +78,7 @@ With your environment active:
 python -m pip install -r requirements.txt
 ```
 
-Package availability depends on Python version, operating system, and processor architecture. If installation fails, share the error and the outputs of:
+Package availability depends on Python version, operating system, and processor architecture. The following commands identify the active Python and pip versions when troubleshooting installation:
 
 ```bash
 python --version
@@ -149,7 +149,7 @@ The labelled dataset contains 1,040 images after removing four manually confirme
 | High | 62 | 13 | 14 | 89 |
 | **Total** | **726** | **154** | **160** | **1,040** |
 
-Assignments are stored in `splits/train.csv`, `splits/val.csv`, and `splits/test.csv`. Use these shared files; do not regenerate splits during an experiment.
+Assignments are stored in `splits/train.csv`, `splits/val.csv`, and `splits/test.csv`. These committed assignments define the documented experiment and are reused across both cascade stages.
 
 The detector uses all examples in the selected split. The risk model uses only its fire examples.
 
@@ -163,17 +163,13 @@ checkpoints/
 └── risk_best.pt
 ```
 
-**Google Drive download:** [Download the baseline checkpoint ZIP](GOOGLE_DRIVE_CHECKPOINT_LINK)
-
-**Maintainer: replace `GOOGLE_DRIVE_CHECKPOINT_LINK` with the actual Google Drive sharing URL before handing off this README.** Ensure teammates and markers have download access and test the link using an account with the intended permissions.
+**Google Drive download:** [Download the baseline checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
 
 Checkpoint files are excluded from Git. Download and extract the ZIP, then place both `.pt` files directly in the project's `checkpoints/` folder as shown above. Avoid an extra nested folder such as `checkpoints/checkpoints/`.
 
-Alternatively, reproduce training using the commands below. Prediction, demo, evaluation, and quickstart require checkpoints to exist first. They do not automatically train missing models.
+Checkpoints can also be generated using the [training commands](#reproduce-training). Prediction, demo, evaluation, and quickstart load existing checkpoints; training is a separate operation.
 
-If the model, preprocessing, labels, or training procedure changes, review whether retraining is required and distribute matching updated checkpoints. Preserve the original weights as a baseline and record the corresponding code commit, settings, and validation results.
-
-Updating GitHub code does not update another person's local checkpoint files.
+Checkpoints are tied to the model architecture, class ordering, and preprocessing used during training. The baseline checkpoints correspond to the configuration and validation results documented below. Source code and trained weights are distributed separately.
 
 ## Quickstart
 
@@ -230,7 +226,7 @@ Current settings:
 - Random seed: 0.
 - Checkpoint selection: lowest validation loss.
 
-Training starts fresh and can overwrite the selected stage's checkpoint. Back up existing weights before running comparison experiments.
+Each training run starts from ImageNet-pretrained weights and saves the selected stage to `checkpoints/<stage>_best.pt`, replacing an existing file at that path. Checkpoint selection uses the lowest validation loss within the current run; existing checkpoints are not used to resume training.
 
 Seeds help repeatability, but results may differ across hardware and software versions.
 
@@ -259,7 +255,7 @@ Available categories:
 
 The demo scans validation images, selects an example predicted as the requested category, and opens it. The terminal prints both the assigned label and prediction.
 
-The seed controls example selection. This prediction-filtered demo does not replace full-set evaluation.
+The seed controls example selection. TThe demo displays an image alongside its prediction and reference label, allowing visual inspection of correct and incorrect classifications. It does not replace full-set evaluation.
 
 ## Evaluate the cascade
 
@@ -275,7 +271,7 @@ After model configurations are finalized:
 python src/main.py evaluate --split test
 ```
 
-Keep the test set out of model-selection decisions.
+Validation is used during development. The test split is reserved for assessment after model configuration has been finalized.
 
 Evaluation includes all images in the selected split, including fires incorrectly rejected by the detector. It reports accuracy, per-class precision/recall/F1, macro-F1, the confusion matrix, false alarms, and missed fires.
 
@@ -288,7 +284,7 @@ outputs/<split>/
 └── metrics.json
 ```
 
-Metrics include checkpoint identification information. Rerunning evaluation overwrites results for that split; preserve previous outputs when comparing experiments.
+Metrics include checkpoint identification information. Evaluation overwrites existing output files for the selected split.
 
 ## Initial validation results
 
@@ -347,4 +343,4 @@ These are initial validation results, not final test results.
 
 ## AI assistance
 
-AI assisted with programming explanations, code development, debugging and formatting.
+OpenAI Codex assisted with programming explanations, code development, debugging, and documentation formatting.
