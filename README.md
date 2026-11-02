@@ -165,7 +165,20 @@ checkpoints/
 
 **Google Drive download:** [Download the baseline checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
 
-Checkpoint files are excluded from Git. Download and extract the ZIP, then place both `.pt` files directly in the project's `checkpoints/` folder as shown above. Avoid an extra nested folder such as `checkpoints/checkpoints/`.
+Checkpoint files are excluded from Git. Download and extract the ZIP. The extracted folder is named `checkpoints` and contains `detector_best.pt` and `risk_best.pt`.
+
+Place the entire extracted `checkpoints` folder in the project root, alongside `src`:
+
+```text
+SENG474-Project/
+├── src/
+├── checkpoints/
+│   ├── detector_best.pt
+│   └── risk_best.pt
+└── README.md
+```
+
+If the project already has a `checkpoints` folder, copy the two `.pt` files from the extracted folder into the existing one instead. The files must be directly under `checkpoints/`, not nested under `checkpoints/checkpoints/`.
 
 Checkpoints can also be generated using the [training commands](#reproduce-training). Prediction, demo, evaluation, and quickstart load existing checkpoints; training is a separate operation.
 
@@ -255,7 +268,7 @@ Available categories:
 
 The demo scans validation images, selects an example predicted as the requested category, and opens it. The terminal prints both the assigned label and prediction.
 
-The seed controls example selection. TThe demo displays an image alongside its prediction and reference label, allowing visual inspection of correct and incorrect classifications. It does not replace full-set evaluation.
+The seed controls example selection. The demo displays an image alongside its prediction and reference label, allowing visual inspection of correct and incorrect classifications. It does not replace full-set evaluation.
 
 ## Evaluate the cascade
 
