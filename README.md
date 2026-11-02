@@ -24,8 +24,20 @@ Implemented:
 - A visual demonstration using validation images.
 - Full-cascade evaluation with saved metrics and predictions.
 - A unified command interface through `src/main.py`.
+- A tested quickstart that runs a sample prediction and full validation evaluation.
 
-## Setup
+## Setup and quickstart
+
+Run all commands from the repository root (`SENG474-Project`), with your Python environment active.
+
+For a first run:
+
+1. Clone the repository and install dependencies using the steps below.
+2. Download/extract the Kaggle dataset and run [dataset preparation](#prepare-the-images).
+3. Download the trained models from the [checkpoint section](#obtain-trained-checkpoints).
+4. Run the [quickstart](#quickstart).
+
+The quickstart checks prerequisites and demonstrates the prepared system. It does not install packages, download data or weights, or train models automatically.
 
 ### 1. Clone the repository
 
@@ -151,13 +163,46 @@ checkpoints/
 └── risk_best.pt
 ```
 
-Checkpoint files are excluded from Git. Obtain the baseline checkpoint ZIP from the team and extract the two files into `checkpoints/`, or reproduce training using the commands below.
+**Google Drive download:** [Download the baseline checkpoint ZIP](GOOGLE_DRIVE_CHECKPOINT_LINK)
 
-**Team action:** email/share the baseline checkpoint ZIP and confirm that teammates and markers have access. Add the shared download location here once available.
+**Maintainer: replace `GOOGLE_DRIVE_CHECKPOINT_LINK` with the actual Google Drive sharing URL before handing off this README.** Ensure teammates and markers have download access and test the link using an account with the intended permissions.
+
+Checkpoint files are excluded from Git. Download and extract the ZIP, then place both `.pt` files directly in the project's `checkpoints/` folder as shown above. Avoid an extra nested folder such as `checkpoints/checkpoints/`.
+
+Alternatively, reproduce training using the commands below. Prediction, demo, evaluation, and quickstart require checkpoints to exist first. They do not automatically train missing models.
 
 If the model, preprocessing, labels, or training procedure changes, review whether retraining is required and distribute matching updated checkpoints. Preserve the original weights as a baseline and record the corresponding code commit, settings, and validation results.
 
 Updating GitHub code does not update another person's local checkpoint files.
+
+## Quickstart
+
+After dependencies, images, and both checkpoints are prepared, run:
+
+```bash
+python src/quickstart.py
+```
+
+The script:
+
+1. Checks that PyTorch and Torchvision load.
+2. Checks that both checkpoint files and all validation image paths exist.
+3. Runs the cascade on the first validation image.
+4. Evaluates the full cascade on all 154 validation images.
+5. Saves evaluation outputs to `outputs/val/`.
+
+A successful run ends with:
+
+```text
+Quickstart completed successfully.
+Prediction and validation evaluation both ran successfully.
+```
+
+This demonstrates functionality. The sample prediction does not have to match its reference label for the program to run successfully. The full validation metrics describe model performance.
+
+The quickstart does **not** retrain either model or evaluate the test split. It overwrites existing validation result files. If prerequisites are missing, follow the reported instructions and rerun it.
+
+With the supplied baseline weights and unchanged data, the recorded run produced **83.77% validation accuracy** and **71.88% macro-F1**. Numerical results may vary across platforms; checkpoint and split identifiers are recorded in `metrics.json`.
 
 ## Reproduce training
 
@@ -280,6 +325,7 @@ These are initial validation results, not final test results.
 | File | Purpose |
 |---|---|
 | `src/main.py` | Unified command entry point |
+| `src/quickstart.py` | Check prerequisites, run a sample prediction, and evaluate validation data |
 | `src/prepare_data.py` | Organize downloaded images using shared CSV labels |
 | `src/export_labels.py` | Export labels from locally sorted folders |
 | `src/check_duplicates.py` | Screen exact and visually similar image pairs |
