@@ -217,18 +217,18 @@ Checkpoints are tied to the model architecture, class ordering, and preprocessin
 
 ## Quickstart
 
-After dependencies, images, and both checkpoints are prepared, run:
+After preparing the dependencies, images, and both checkpoints, run:
 
 ```bash
 python src/quickstart.py
 ```
 
-The script:
+The script
 
-1. Checks that PyTorch and Torchvision load.
-2. Checks that both checkpoint files and all validation image paths exist.
-3. Runs the cascade on the first validation image.
-4. Evaluates the full cascade on all 154 validation images.
+1. Checks that PyTorch and Torchvision load
+2. Checks that both checkpoint files and all validation image paths exist
+3. Runs the cascade on the first validation image
+4. Evaluates the full cascade on all 154 validation images
 5. Saves evaluation outputs to `outputs/val/`.
 
 A successful run ends with:
