@@ -11,10 +11,10 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 | [Dataset Splits](#dataset-splits) |
 | [Obtaining Trained Checkpoints](#obtaining-trained-checkpoints) |
 | [Quickstart](#quickstart) |
-| [Reproduce Training](#reproduce-training) |
+| [Reproducing Training](#reproducing-training) |
 | [Predicting One Image](#predicting-one-image) |
 | [Running the Visual Demo](#running-the-visual-demo) |
-| [Evalulate the Cascade](#evaluate-the-cascade) |
+| [Evalulating the Cascade](#evaluating-the-cascade) |
 | [Initial Validation Results](#initial-validation-results) |
 | [Known Limitations](#known-limitations) |
 | [File Overview](#file-overview) |
