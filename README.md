@@ -26,7 +26,7 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
 1. A detector determines if an image contains **fire** or **no fire**.
-2. Images determined to contain fire are passed to a risk classifier, which assigns an apparent visual risk of **low**, **medium**, or **high**.
+2. Images determined to contain fire are passed to a risk classifier, which assigns the image an apparent visual risk of **low**, **medium**, or **high**.
 
 The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
 
@@ -35,16 +35,15 @@ The dataset contains both aerial and ground-based images. Risk labels are manual
 ## Current Status
 
 Implemented:
-
-- CSV label export and duplicate screening.
-- Saved training, validation, and test splits.
-- Dataset preparation from a downloaded Kaggle dataset.
-- Stage-specific image loading and preprocessing.
-- Training and best-checkpoint saving for both models.
-- Single-image prediction.
-- A visual demonstration using validation images.
-- Full-cascade evaluation with saved metrics and predictions.
-- A unified command interface through `src/main.py`.
+- CSV label export and duplicate screening
+- Saved training, validation, and test splits
+- Dataset preparation from a downloaded Kaggle dataset
+- Stage-specific image loading and preprocessing
+- Training and best-checkpoint saving for both models
+- Single-image prediction
+- A visual demonstration using validation images
+- Full-cascade evaluation with saved metrics and predictions
+- A unified command interface through `src/main.py`
 - A tested quickstart that runs a sample prediction and full validation evaluation.
 
 ## Setup
@@ -52,15 +51,14 @@ Implemented:
 Run all commands from the repository root (`SENG474-Project`), with your Python environment active.
 
 For a first run:
-
-1. Clone the repository and install dependencies using the steps below.
-2. Download/extract the Kaggle dataset and run [dataset preparation](#prepare-the-images).
-3. Download the trained models from the [checkpoint section](#obtain-trained-checkpoints).
+1. Clone the repository and install dependencies using the steps below
+2. Download/extract the Kaggle dataset and run [dataset preparation](#preparing-the-images)
+3. Download the trained models from the [checkpoint section](#obtaining-trained-checkpoints)
 4. Run the [quickstart](#quickstart).
 
-The quickstart checks prerequisites and demonstrates the prepared system. It does not install packages, download data or weights, or train models automatically.
+The quickstart checks prerequisites and demonstrates the prepared system. It does not install packages, download data or weights, or train models.
 
-### 1. Clone the repository
+### 1. Cloning the repository
 
 ```bash
 git clone https://github.com/p-m-s-f/SENG474-Project.git
@@ -69,7 +67,7 @@ cd SENG474-Project
 
 If already cloned, open your existing project folder and update it as appropriate.
 
-### 2. Choose a Python environment
+### 2. Choosing a Python environment
 
 The initial setup was tested with **Python 3.14.7**, **PyTorch 2.14.1**, and **Torchvision 0.29.1**.
 
@@ -89,9 +87,13 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Check that your chosen Python version is compatible with the dependencies. The commands above use whichever Python installation they resolve to; they do not install Python 3.14.
+Check that your chosen Python version is compatible with the dependencies. The commands above use whichever Python installation they resolve to; they do not install Python 3.14. You can check identify your Python version using the following command:
 
-### 3. Install dependencies
+```bash
+python --version
+```
+
+### 3. Installing dependencies
 
 With your environment active:
 
@@ -99,14 +101,21 @@ With your environment active:
 python -m pip install -r requirements.txt
 ```
 
-Package availability depends on Python version, operating system, and processor architecture. The following commands identify the active Python and pip versions when troubleshooting installation:
+The scripts select NVIDIA CUDA when available. Otherwise, it uses Apple MPS. CPU execution is supported, but may be slower.
+
+#### 3.1 Troubleshooting Installation
+
+Package availability depends on your Python version, operating system, and processor architecture. The following commands identify the active pip version for troubleshooting installation:
 
 ```bash
-python --version
 python -m pip --version
 ```
 
-The scripts select NVIDIA CUDA when available, otherwise Apple MPS, otherwise CPU. CPU execution is supported but may be slower.
+If you're using an up-to-date version of Pip, you can create a verbose installation log file for more information:
+
+```bash
+python -m pip install -r requirements.txt --log log.txt
+```
 
 ### 4. Check available commands
 
@@ -126,11 +135,11 @@ python src/main.py evaluate --help
 
 ## Preparing the Images
 
-Download and extract the [Wildfire Dataset from Kaggle](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset).
+Download and extract Ismail El Madafri's [Wildfire Dataset](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset) from Kaggle.
 
 The shared `image_labels.csv` contains filenames and manually assigned categories. The preparation script searches the extracted download and copies the required images into the matching project folders.
 
-First check without copying:
+First, check without copying:
 
 ```bash
 python src/main.py prepare --source "/path/to/extracted/dataset" --dry-run
