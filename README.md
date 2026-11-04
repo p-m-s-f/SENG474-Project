@@ -2,6 +2,27 @@
 
 A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell, and Varun Menon.
 
+| Table of Contents |
+| ----------- |
+| [Overview](#overview) |
+| [Current Status](#current-status) |
+| [Setup](#setup) |
+| [Preparing the Images](#preparing-the-images) |
+| [Dataset Splits](#dataset-splits) |
+| [Obtaining Trained Checkpoints](#obtaining-trained-checkpoints) |
+| [Quickstart](#quickstart) |
+| [Reproduce Training](#reproduce-training) |
+| [Predicting One Image](#predicting-one-image) |
+| [Running the Visual Demo](#running-the-visual-demo) |
+| [Evalulate the Cascade](#evaluate-the-cascade) |
+| [Initial Validation Results](#initial-validation-results) |
+| [Known Limitations](#known-limitations) |
+| [File Overview](#file-overview) |
+| [References](#references) |
+| [AI Assistance](#ai-assistance) |
+
+## Overview
+
 The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
 1. A detector determines if an image contains **fire** or **no fire**.
@@ -11,7 +32,7 @@ The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
 
 The dataset contains both aerial and ground-based images. Risk labels are manually assigned using visible smoke, flames, and foliage damage. Risk labels are visual assessments, not verified operational severity measurements.
 
-## Current status
+## Current Status
 
 Implemented:
 
@@ -26,7 +47,7 @@ Implemented:
 - A unified command interface through `src/main.py`.
 - A tested quickstart that runs a sample prediction and full validation evaluation.
 
-## Setup and quickstart
+## Setup
 
 Run all commands from the repository root (`SENG474-Project`), with your Python environment active.
 
@@ -103,7 +124,7 @@ python src/main.py demo --help
 python src/main.py evaluate --help
 ```
 
-## Prepare the images
+## Preparing the Images
 
 Download and extract the [Wildfire Dataset from Kaggle](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset).
 
@@ -137,7 +158,7 @@ data/
 
 Images remain local and are excluded from Git.
 
-## Dataset splits
+## Dataset Splits
 
 The labelled dataset contains 1,040 images after removing four manually confirmed duplicate copies.
 
@@ -153,7 +174,7 @@ Assignments are stored in `splits/train.csv`, `splits/val.csv`, and `splits/test
 
 The detector uses all examples in the selected split. The risk model uses only its fire examples.
 
-## Obtain trained checkpoints
+## Obtaining Trained Checkpoints
 
 Prediction, demonstration, and evaluation require:
 
@@ -213,7 +234,7 @@ The quickstart does **not** retrain either model or evaluate the test split. It 
 
 With the supplied baseline weights and unchanged data, the recorded run produced **83.77% validation accuracy** and **71.88% macro-F1**. Numerical results may vary across platforms; checkpoint and split identifiers are recorded in `metrics.json`.
 
-## Reproduce training
+## Reproduce Training
 
 Train the detector:
 
@@ -243,7 +264,7 @@ Each training run starts from ImageNet-pretrained weights and saves the selected
 
 Seeds help repeatability, but results may differ across hardware and software versions.
 
-## Predict one image
+## Predicting One Image
 
 ```bash
 python src/main.py predict --image "/path/to/image.jpg"
@@ -253,7 +274,7 @@ The image can be outside the dataset and does not need a reference label.
 
 Prediction loads the saved models without training them. Only image pixels are supplied to the networks; folder names do not determine predictions.
 
-## Run the visual demo
+## Running the Visual Demo
 
 ```bash
 python src/main.py demo --predicted-category fire_high --seed 0
@@ -270,7 +291,7 @@ The demo scans validation images, selects an example predicted as the requested 
 
 The seed controls example selection. The demo displays an image alongside its prediction and reference label, allowing visual inspection of correct and incorrect classifications. It does not replace full-set evaluation.
 
-## Evaluate the cascade
+## Evaluate the Cascade
 
 During development:
 
@@ -299,7 +320,7 @@ outputs/<split>/
 
 Metrics include checkpoint identification information. Evaluation overwrites existing output files for the selected split.
 
-## Initial validation results
+## Initial Validation Results
 
 Selected detector checkpoint: epoch 2, validation accuracy 94.16%.
 
@@ -317,7 +338,7 @@ Full-cascade validation results:
 
 These are initial validation results, not final test results.
 
-## Known limitations
+## Known Limitations
 
 - The risk model overfits: training accuracy reaches 100%, while validation performance declines after epoch 3. Selecting an earlier checkpoint does not solve the underlying issue.
 - A fire incorrectly classified as no fire never reaches the risk model.
@@ -329,7 +350,7 @@ These are initial validation results, not final test results.
 - Resizing can remove small fire details and distort image proportions.
 - The prototype is not validated for operational firefighting decisions.
 
-## File overview
+## File Overview
 
 | File | Purpose |
 |---|---|
@@ -354,6 +375,6 @@ These are initial validation results, not final test results.
 - He, K., Zhang, X., Ren, S., and Sun, J. (2016). *Deep Residual Learning for Image Recognition.* https://doi.org/10.1109/CVPR.2016.90
 - [Torchvision ResNet-18 documentation and pretrained weights](https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)
 
-## AI assistance
+## AI Assistance
 
 OpenAI Codex assisted with programming explanations, code development, debugging, and documentation formatting.
