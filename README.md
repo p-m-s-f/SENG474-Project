@@ -26,7 +26,7 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
 1. A detector determines if an image contains **fire** or **no fire**.
-2. Images determined to contain fire are passed to a risk classifier, which assigns the image an apparent visual risk of **low**, **medium**, or **high**.
+2. A risk classifier assigns an image an apparent viausl risk of **low**, **medium**, or **high**, only if the image was determined to contain fire.
 
 The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
 
@@ -135,9 +135,9 @@ python src/main.py evaluate --help
 
 ## Preparing the Images
 
-Download and extract Ismail El Madafri's [Wildfire Dataset](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset) from Kaggle.
+Download and extract Ismail El Madafri's [wildfire dataset](https://www.kaggle.com/datasets/elmadafri/the-wildfire-dataset) from Kaggle.
 
-The shared `image_labels.csv` contains filenames and manually assigned categories. The preparation script searches the extracted download and copies the required images into the matching project folders.
+The shared `image_labels.csv` file contains image filenames and their associated manually assigned categories. The preparation script searches the extracted download and copies the required images into the matching project folders.
 
 First, check without copying:
 
@@ -151,7 +151,7 @@ Then prepare the files:
 python src/main.py prepare --source "/path/to/extracted/dataset"
 ```
 
-Replace the example path with the actual extracted folder, not the ZIP. Keep the original download separate from the project's `data` folder.
+Replace the example path with the path to the actual extracted folder, not the ZIP file. Keep the original download separate from the project's `data` folder.
 
 The script preserves the source files, skips identical prepared files, and reports missing or ambiguous filenames. Copying requires additional disk space.
 
