@@ -231,16 +231,16 @@ The script
 4. Evaluates the full cascade on all 154 validation images
 5. Saves evaluation outputs to `outputs/val/`.
 
-A successful run ends with:
+A successful run ends with the terminal output:
 
 ```text
 Quickstart completed successfully.
 Prediction and validation evaluation both ran successfully.
 ```
 
-This demonstrates functionality. The sample prediction does not have to match its reference label for the program to run successfully. The full validation metrics describe model performance.
+The sample prediction does not have to match its reference label for the program to run successfully. The full validation metrics describe model performance.
 
-The quickstart does **not** retrain either model or evaluate the test split. It overwrites existing validation result files. If prerequisites are missing, follow the reported instructions and rerun it.
+The quickstart does **not** retrain either model or evaluate the test split. It overwrites existing validation result files. If prerequisites are missing, follow the reported instructions and rerun `quickstart.py`.
 
 With the supplied baseline weights and unchanged data, the recorded run produced **83.77% validation accuracy** and **71.88% macro-F1**. Numerical results may vary across platforms; checkpoint and split identifiers are recorded in `metrics.json`.
 
