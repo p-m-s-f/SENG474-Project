@@ -62,7 +62,7 @@ For a first run
 
 The quickstart checks prerequisites and demonstrates the prepared system. It does not install packages, download data or weights, or train models.
 
-### 1. Cloning the repository
+### 1. Cloning the Repository
 
 ```bash
 git clone https://github.com/p-m-s-f/SENG474-Project.git
@@ -71,7 +71,7 @@ cd SENG474-Project
 
 If already cloned, open your existing project folder and update it as appropriate.
 
-### 2. Choosing a Python environment
+### 2. Choosing a Python Environment
 
 The initial setup was tested with **Python 3.14.7**, **PyTorch 2.14.1**, and **Torchvision 0.29.1**.
 
@@ -97,7 +97,7 @@ Check that your chosen Python version is compatible with the dependencies. The c
 python --version
 ```
 
-### 3. Installing dependencies
+### 3. Installing Dependencies
 
 With your environment active:
 
@@ -121,7 +121,7 @@ If you're using an up-to-date version of Pip, you can create a verbose installat
 python -m pip install -r requirements.txt --log log.txt
 ```
 
-### 4. Checking available commands
+### 4. Checking Available Commands
 
 ```bash
 python src/main.py --help
@@ -143,7 +143,7 @@ Download and extract Ismail El Madafri's [wildfire dataset](https://www.kaggle.c
 
 The shared `image_labels.csv` file contains image filenames and their associated manually assigned categories. The preparation script searches the extracted download and copies the required images into the matching project folders.
 
-First, check without copying:
+Before copying, check:
 
 ```bash
 python src/main.py prepare --source "/path/to/extracted/dataset" --dry-run
