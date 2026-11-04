@@ -300,19 +300,17 @@ The seed controls example selection. The demo displays an image alongside its pr
 
 ## Evaluate the Cascade
 
-During development:
+Validatin is used during development:
 
 ```bash
 python src/main.py evaluate --split val
 ```
 
-After model configurations are finalized:
+The test split is reserved for assessment after model configurations are finalized:
 
 ```bash
 python src/main.py evaluate --split test
 ```
-
-Validation is used during development. The test split is reserved for assessment after model configuration has been finalized.
 
 Evaluation includes all images in the selected split, including fires incorrectly rejected by the detector. It reports accuracy, per-class precision/recall/F1, macro-F1, the confusion matrix, false alarms, and missed fires.
 
