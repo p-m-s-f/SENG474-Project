@@ -54,7 +54,7 @@ Implemented:
 
 Run all commands from the repository root (`SENG474-Project`), with your Python environment active.
 
-For a first run:
+For a first run
 1. Clone the repository and install dependencies using the steps below
 2. Download/extract the Kaggle dataset and run [dataset preparation](#preparing-the-images)
 3. Download the trained models from the [checkpoint section](#obtaining-trained-checkpoints)
