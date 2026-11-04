@@ -18,7 +18,6 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 | [Initial Validation Results](#initial-validation-results) |
 | [Known Limitations](#known-limitations) |
 | [File Overview](#file-overview) |
-| [References](#references) |
 | [AI Assistance](#ai-assistance) |
 
 ## Overview
@@ -377,11 +376,6 @@ Full-cascade validation results:
 | `src/evaluate.py` | Evaluate the full cascade and save results |
 
 `export_labels.py` and `split_data.py` overwrite their CSV outputs. They are preparation utilities, not commands to rerun before every prediction or training run.
-
-## References
-- El-Madafri, I., Peña, M., and Olmedo-Torre, N. (2023). *The Wildfire Dataset: Enhancing Deep Learning-Based Forest Fire Detection with a Diverse Evolving Open-Source Dataset Focused on Data Representativeness and a Novel Multi-Task Learning Approach.* https://doi.org/10.3390/f14091697
-- He, K., Zhang, X., Ren, S., and Sun, J. (2016). *Deep Residual Learning for Image Recognition.* https://doi.org/10.1109/CVPR.2016.90
-- [Torchvision ResNet-18 documentation and pretrained weights](https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)
 
 ## AI Assistance
 
