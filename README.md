@@ -224,7 +224,6 @@ python src/quickstart.py
 ```
 
 The script
-
 1. Checks that PyTorch and Torchvision load
 2. Checks that both checkpoint files and all validation image paths exist
 3. Runs the cascade on the first validation image
@@ -258,16 +257,15 @@ Train the risk classifier:
 python src/main.py train --stage risk
 ```
 
-Current settings:
-
-- ImageNet-pretrained ResNet-18, with all layers fine-tuned.
-- Input: RGB images resized to 224 × 224 with ImageNet normalization.
-- Optimizer: Adam.
-- Learning rate: 0.0001.
-- Batch size: 16.
-- Epochs: 5.
-- Loss: cross-entropy.
-- Random seed: 0.
+The current settings are
+- ImageNet-pretrained ResNet-18, with all layers fine-tuned
+- Input: RGB images resized to 224 × 224 with ImageNet normalization
+- Optimizer: Adam
+- Learning rate: 0.0001
+- Batch size: 16
+- Epochs: 5
+- Loss: cross-entropy
+- Random seed: 0
 - Checkpoint selection: lowest validation loss.
 
 Each training run starts from ImageNet-pretrained weights and saves the selected stage to `checkpoints/<stage>_best.pt`, replacing an existing file at that path. Checkpoint selection uses the lowest validation loss within the current run; existing checkpoints are not used to resume training.
@@ -290,8 +288,7 @@ Prediction loads the saved models without training them. Only image pixels are s
 python src/main.py demo --predicted-category fire_high --seed 0
 ```
 
-Available categories:
-
+The available categories are
 - `no_fire`
 - `fire_low`
 - `fire_medium`
@@ -299,7 +296,7 @@ Available categories:
 
 The demo scans validation images, selects an example predicted as the requested category, and opens it. The terminal prints both the assigned label and prediction.
 
-The seed controls example selection. The demo displays an image alongside its prediction and reference label, allowing visual inspection of correct and incorrect classifications. It does not replace full-set evaluation.
+The seed controls example selection. The demo displays an image alongside its prediction and reference label, allowing visual inspection of both correct and incorrect classifications. It does not replace full-set evaluation.
 
 ## Evaluate the Cascade
 
