@@ -117,7 +117,7 @@ If you're using an up-to-date version of Pip, you can create a verbose installat
 python -m pip install -r requirements.txt --log log.txt
 ```
 
-### 4. Check available commands
+### 4. Checking available commands
 
 ```bash
 python src/main.py --help
@@ -243,7 +243,7 @@ The quickstart does **not** retrain either model or evaluate the test split. It 
 
 With the supplied baseline weights and unchanged data, the recorded run produced **83.77% validation accuracy** and **71.88% macro-F1**. Numerical results may vary across platforms; checkpoint and split identifiers are recorded in `metrics.json`.
 
-## Reproduce Training
+## Reproducing Training
 
 Train the detector:
 
@@ -298,7 +298,7 @@ The demo scans validation images, selects an example predicted as the requested 
 
 The seed controls example selection. The demo displays an image alongside its prediction and reference label, allowing visual inspection of both correct and incorrect classifications. It does not replace full-set evaluation.
 
-## Evaluate the Cascade
+## Evaluating the Cascade
 
 Validatin is used during development:
 
