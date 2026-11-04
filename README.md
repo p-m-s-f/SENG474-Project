@@ -28,7 +28,11 @@ The system uses two separately trained, pretrained ResNet-18 networks in a casca
 1. A detector determines if an image contains **fire** or **no fire**.
 2. A risk classifier assigns an image an apparent viausl risk of **low**, **medium**, or **high**, only if the image was determined to contain fire.
 
-The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
+The final outputs are
+* `no_fire`
+*  `fire_low`
+* `fire_medium`
+*  `fire_high`
 
 The dataset contains both aerial and ground-based images. Risk labels are manually assigned using visible smoke, flames, and foliage damage. Risk labels are visual assessments, not verified operational severity measurements.
 
