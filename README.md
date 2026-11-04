@@ -196,6 +196,7 @@ checkpoints/
 ├── detector_best.pt
 └── risk_best.pt
 ```
+
 These checkpoint files are excluded from Git because they take up too much storage space. However, you can download them using the Drive link below:
 
 **Google Drive download:** [Download the baseline checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
@@ -215,7 +216,7 @@ SENG474-Project/
 
 If the project already has a `checkpoints` folder, copy the two `.pt` files from the extracted folder into the existing one instead. The files must be directly under `checkpoints/`, not nested under `checkpoints/checkpoints/`.
 
-Checkpoints can also be generated using the [training commands](#reproduce-training). Prediction, demo, evaluation, and quickstart load existing checkpoints; training is a separate operation.
+Checkpoints can also be generated using the [training commands](#reproducing-training). Prediction, demo, evaluation, and quickstart load existing checkpoints; training is a separate operation.
 
 Checkpoints are tied to the model architecture, class ordering, and preprocessing used during training. The baseline checkpoints correspond to the configuration and validation results documented below. Source code and trained weights are distributed separately.
 
@@ -274,7 +275,7 @@ The current settings are
 
 Each training run starts from ImageNet-pretrained weights and saves the selected stage to `checkpoints/<stage>_best.pt`, replacing an existing file at that path. Checkpoint selection uses the lowest validation loss within the current run; existing checkpoints are not used to resume training.
 
-Seeds help repeatability, but results may differ across hardware and software versions.
+Seeds help repeatability, but results may vary across different hardware/software.
 
 ## Predicting One Image
 
@@ -304,7 +305,7 @@ The seed controls example selection. The demo displays an image alongside its pr
 
 ## Evaluating the Cascade
 
-Validatin is used during development:
+Validation is used during development:
 
 ```bash
 python src/main.py evaluate --split val
@@ -331,7 +332,7 @@ Metrics include checkpoint identification information. Evaluation overwrites exi
 
 ## Initial Validation Results
 
-These are initial validation results, not final test results:
+These are initial validation results, not final test results.
 
 Selected detector checkpoint: epoch 2, validation accuracy 94.16%.
 
