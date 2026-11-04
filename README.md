@@ -181,7 +181,7 @@ The labelled dataset contains 1,040 images after removing four manually confirme
 
 Assignments are stored in `splits/train.csv`, `splits/val.csv`, and `splits/test.csv`. These committed assignments define the documented experiment and are reused across both cascade stages.
 
-The detector uses all examples in the selected split. The risk model uses only its fire examples.
+The detector uses all examples in the selected split. The risk model only uses examples containing fire.
 
 ## Obtaining Trained Checkpoints
 
@@ -192,10 +192,11 @@ checkpoints/
 ├── detector_best.pt
 └── risk_best.pt
 ```
+These checkpoint files are excluded from Git because they take up too much storage space. However, you can download them using the Drive link below:
 
 **Google Drive download:** [Download the baseline checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
 
-Checkpoint files are excluded from Git. Download and extract the ZIP. The extracted folder is named `checkpoints` and contains `detector_best.pt` and `risk_best.pt`.
+Download and extract the ZIP file. The extracted folder is named `checkpoints`, and contains `detector_best.pt` and `risk_best.pt`.
 
 Place the entire extracted `checkpoints` folder in the project root, alongside `src`:
 
