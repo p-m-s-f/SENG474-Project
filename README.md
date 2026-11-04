@@ -4,12 +4,12 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 
 The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
-1. A detector predicts **fire** or **no fire**.
-2. Images predicted as fire are passed to a risk classifier, which predicts **low**, **medium**, or **high** apparent visual risk.
+1. A detector determines if an image contains **fire** or **no fire**.
+2. Images determined to contain fire are passed to a risk classifier, which assigns an apparent visual risk of **low**, **medium**, or **high**.
 
 The final outputs are `no_fire`, `fire_low`, `fire_medium`, and `fire_high`.
 
-The dataset contains both aerial and ground-based images. Risk labels are manually assigned using visible smoke, flames, and foliage damage. They are visual assessments, not verified operational severity measurements.
+The dataset contains both aerial and ground-based images. Risk labels are manually assigned using visible smoke, flames, and foliage damage. Risk labels are visual assessments, not verified operational severity measurements.
 
 ## Current status
 
