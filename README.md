@@ -327,12 +327,13 @@ Metrics include checkpoint identification information. Evaluation overwrites exi
 
 ## Initial Validation Results
 
+These are initial validation results, not final test results:
+
 Selected detector checkpoint: epoch 2, validation accuracy 94.16%.
 
 Selected risk checkpoint: epoch 3, validation accuracy 75.00% on known fire images.
 
 Full-cascade validation results:
-
 | Metric | Result |
 |---|---:|
 | Accuracy | 83.77% |
@@ -340,8 +341,6 @@ Full-cascade validation results:
 | False alarms | 4 of 90 no-fire images |
 | Missed fires | 5 of 64 fire images |
 | Fire detection recall | 92.19% |
-
-These are initial validation results, not final test results.
 
 ## Known Limitations
 
@@ -375,7 +374,6 @@ These are initial validation results, not final test results.
 `export_labels.py` and `split_data.py` overwrite their CSV outputs. They are preparation utilities, not commands to rerun before every prediction or training run.
 
 ## References
-
 - El-Madafri, I., Peña, M., and Olmedo-Torre, N. (2023). *The Wildfire Dataset: Enhancing Deep Learning-Based Forest Fire Detection with a Diverse Evolving Open-Source Dataset Focused on Data Representativeness and a Novel Multi-Task Learning Approach.* https://doi.org/10.3390/f14091697
 - He, K., Zhang, X., Ren, S., and Sun, J. (2016). *Deep Residual Learning for Image Recognition.* https://doi.org/10.1109/CVPR.2016.90
 - [Torchvision ResNet-18 documentation and pretrained weights](https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)
