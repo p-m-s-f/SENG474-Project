@@ -26,10 +26,14 @@ def main():
         choices=["val", "test"],
         default="val",
     )
+    parser.add_argument("--csv", type=Path)
+    parser.add_argument("--checkpoint-dir", type=Path)
+    parser.add_argument("--output-dir", type=Path)
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
-    split_file = project_root / "splits" / f"{args.split}.csv"
+    split_file = args.csv or project_root / "splits" / f"{args.split}.csv"
+    checkpoint_dir = args.checkpoint_dir or project_root / "checkpoints"
 
     class_names = ["no_fire", "fire_low", "fire_medium", "fire_high"]
     class_indices = {
@@ -62,14 +66,14 @@ def main():
     print(f"Images: {len(records)}")
 
     device = get_device()
-    detector, risk_model = load_models(project_root, device)
+    detector, risk_model = load_models(project_root, device, checkpoint_dir)
     print(f"Device: {device}")
 
     # Record exactly which saved models were evaluated.
     checkpoint_info = {}
 
     for stage in ["detector", "risk"]:
-        path = project_root / "checkpoints" / f"{stage}_best.pt"
+        path = checkpoint_dir / f"{stage}_best.pt"
         checkpoint = torch.load(
             path,
             map_location="cpu",
@@ -200,7 +204,7 @@ def main():
     print(f"Missed fires: {false_negative}")
     print(f"Fire recall: {fire_recall:.2%}")
 
-    output_dir = project_root / "outputs" / args.split
+    output_dir = args.output_dir or project_root / "outputs" / args.split
     output_dir.mkdir(parents=True, exist_ok=True)
 
     with (output_dir / "predictions.csv").open(

@@ -14,12 +14,13 @@ def get_device():
     return torch.device("cpu")
 
 
-def load_models(project_root, device):
+def load_models(project_root, device, checkpoint_dir=None):
+    checkpoint_dir = checkpoint_dir or project_root / "checkpoints"
     models = {}
 
     for stage, num_classes in [("detector", 2), ("risk", 3)]:
         checkpoint = torch.load(
-            project_root / "checkpoints" / f"{stage}_best.pt",
+            checkpoint_dir / f"{stage}_best.pt",
             map_location="cpu",
             weights_only=True,
         )
