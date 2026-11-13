@@ -15,6 +15,12 @@ def main():
         choices=["detector", "risk"],
         default="detector",
     )
+    parser.add_argument("--train-csv", type=Path)
+    parser.add_argument("--val-csv", type=Path)
+    parser.add_argument("--checkpoint-dir", type=Path)
+    parser.add_argument("--lr", type=float, default=0.0001)
+    parser.add_argument("--epochs", type=int, default=5)
+    parser.add_argument("--fixed-epochs", action="store_true")
     args = parser.parse_args()
 
     stage = args.stage
@@ -40,13 +46,15 @@ def main():
     project_root = Path(__file__).resolve().parent.parent
 
     train_dataset = WildfireDataset(
-        project_root / "splits" / "train.csv",
+        args.train_csv or project_root / "splits" / "train.csv",
         stage=stage,
     )
-    val_dataset = WildfireDataset(
-        project_root / "splits" / "val.csv",
-        stage=stage,
-    )
+    val_dataset = None
+    if not args.fixed_epochs:
+        val_dataset = WildfireDataset(
+            args.val_csv or project_root / "splits" / "val.csv",
+            stage=stage,
+        )
 
     generator = torch.Generator().manual_seed(0)
 
@@ -56,14 +64,13 @@ def main():
         shuffle=True,
         generator=generator,
     )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=16,
-        shuffle=False,
-    )
-
     print(f"Training images: {len(train_dataset)}")
-    print(f"Validation images: {len(val_dataset)}")
+
+    val_loader = None
+    if val_dataset is not None:
+        val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+        print(f"Validation images: {len(val_dataset)}")
+
 
     model = build_model(len(class_names)).to(device)
 
@@ -71,16 +78,16 @@ def main():
 
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=0.0001,
+        lr=args.lr,
     )
 
     print(f"{stage.capitalize()} ready for training")
 
-    epochs = 5
+    epochs = args.epochs
     best_val_loss = float("inf")
 
-    checkpoint_dir = project_root / "checkpoints"
-    checkpoint_dir.mkdir(exist_ok=True)
+    checkpoint_dir = args.checkpoint_dir or project_root / "checkpoints"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     for epoch in range(epochs):
         print(f"\nEpoch {epoch + 1}/{epochs}")
@@ -113,31 +120,40 @@ def main():
         print(f"Training loss: {total_loss / total_images:.4f}")
         print(f"Training accuracy: {total_correct / total_images:.2%}")
 
-        model.eval()
-        val_loss = 0.0
-        val_correct = 0
-        val_images = 0
 
-        with torch.no_grad():
-            for images, labels in val_loader:
-                images = images.to(device)
-                labels = labels.to(device)
+        average_val_loss = None
+        if val_loader is not None:
+            model.eval()
+            val_loss = 0.0
+            val_correct = 0
+            val_images = 0
 
-                scores = model(images)
-                loss = loss_function(scores, labels)
+            with torch.no_grad():
+                for images, labels in val_loader:
+                    images = images.to(device)
+                    labels = labels.to(device)
 
-                val_loss += loss.item() * images.size(0)
-                predictions = scores.argmax(dim=1)
-                val_correct += (predictions == labels).sum().item()
-                val_images += images.size(0)
+                    scores = model(images)
+                    loss = loss_function(scores, labels)
 
-        average_val_loss = val_loss / val_images
+                    val_loss += loss.item() * images.size(0)
+                    predictions = scores.argmax(dim=1)
+                    val_correct += (predictions == labels).sum().item()
+                    val_images += images.size(0)
 
-        print(f"Validation loss: {average_val_loss:.4f}")
-        print(f"Validation accuracy: {val_correct / val_images:.2%}")
+            average_val_loss = val_loss / val_images
 
-        if average_val_loss < best_val_loss:
-            best_val_loss = average_val_loss
+            print(f"Validation loss: {average_val_loss:.4f}")
+            print(f"Validation accuracy: {val_correct / val_images:.2%}")
+
+        if args.fixed_epochs:
+            save_checkpoint = epoch + 1 == epochs
+        else:
+            save_checkpoint = average_val_loss < best_val_loss
+            if save_checkpoint:
+                best_val_loss = average_val_loss
+
+        if save_checkpoint:
 
             torch.save(
                 {
