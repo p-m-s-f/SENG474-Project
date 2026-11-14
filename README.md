@@ -14,8 +14,9 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 | [Reproducing Training](#reproducing-training) |
 | [Predicting One Image](#predicting-one-image) |
 | [Running the Visual Demo](#running-the-visual-demo) |
-| [Evalulating the Cascade](#evaluating-the-cascade) |
+| [Evaluating the Cascade](#evaluating-the-cascade) |
 | [Initial Validation Results](#initial-validation-results) |
+| [Milestone 4 Evaluation](#milestone-4-evaluation) |
 | [Known Limitations](#known-limitations) |
 | [File Overview](#file-overview) |
 | [AI Assistance](#ai-assistance) |
@@ -25,7 +26,7 @@ A wildfire image-classification project by Parris Mook-Sang-Forbes, Max Patchell
 The system uses two separately trained, pretrained ResNet-18 networks in a cascade:
 
 1. A detector determines if an image contains **fire** or **no fire**.
-2. A risk classifier assigns an image an apparent viausl risk of **low**, **medium**, or **high**, only if the image was determined to contain fire.
+2. A risk classifier assigns an image an apparent visual risk of **low**, **medium**, or **high**, only if the image was determined to contain fire.
 
 The final outputs are
 * `no_fire`
@@ -90,7 +91,7 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Check that your chosen Python version is compatible with the dependencies. The commands above use whichever Python installation they resolve to; they do not install Python 3.14. You can check identify your Python version using the following command:
+Check that your chosen Python version is compatible with the dependencies. The commands above use whichever Python installation they resolve to; they do not install Python 3.14. You can check your Python version using the following command:
 
 ```bash
 python --version
@@ -198,7 +199,7 @@ checkpoints/
 
 These checkpoint files are excluded from Git because they take up too much storage space. However, you can download them using the Drive link below:
 
-**Google Drive download:** [Download the baseline checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
+**Google Drive download:** [Download the initial cascade checkpoint ZIP](https://drive.google.com/file/d/1zwEkgSP_wCIjfttBFOi2-4NnOsvt_1Id/view?usp=sharing)
 
 Download and extract the ZIP file. The extracted folder is named `checkpoints`, and contains `detector_best.pt` and `risk_best.pt`.
 
@@ -310,11 +311,7 @@ Validation is used during development:
 python src/main.py evaluate --split val
 ```
 
-The test split is reserved for assessment after model configurations are finalized:
-
-```bash
-python src/main.py evaluate --split test
-```
+The validation command above uses the downloadable initial cascade checkpoints. For the final held-out test, follow [Reproduce the final cascade test](#reproduce-the-final-cascade-test), which trains the final models and explicitly loads their checkpoints for evaluation.
 
 Evaluation includes all images in the selected split, including fires incorrectly rejected by the detector. It reports accuracy, per-class precision/recall/F1, macro-F1, the confusion matrix, false alarms, and missed fires.
 
@@ -346,6 +343,73 @@ Full-cascade validation results:
 | Missed fires | 5 of 64 fire images |
 | Fire detection recall | 92.19% |
 
+## Milestone 4 Evaluation
+
+We combined the original training and validation splits into 880 development images and used three shared stratified folds to select settings by mean macro-F1. We then fitted each method on the full development set and evaluated it on the original 160 held-out test images. The [Milestone 4 results](results/milestone4/README.md) include the learning-rate comparison, final test scores, and cascade confusion matrix.
+
+Run the commands below from the repository root after installing dependencies and preparing the images. The fold CSVs in `splits/cv/` and the combined split in `splits/development.csv` are committed. To regenerate the fold CSVs, run `python src/make_folds.py`.
+
+### Reproduce the cascade learning-rate comparison
+
+Both stages start from ImageNet-pretrained ResNet18 weights and train for five epochs with Adam and a batch size of 16. Each run uses the same learning rate for both stages and evaluates the complete cascade on the fold’s validation images.
+
+```bash
+(
+  set -e
+  for fold in 1 2 3; do
+    for lr in 0.0001 0.00001; do
+      split="splits/cv/fold_$fold"
+      run="outputs/cv/fold_$fold/lr_$lr"
+
+      for stage in detector risk; do
+        python src/train.py --stage "$stage" \
+          --train-csv "$split/train.csv" \
+          --lr "$lr" --epochs 5 --fixed-epochs \
+          --checkpoint-dir "$run"
+      done
+
+      python src/evaluate.py --csv "$split/val.csv" \
+        --checkpoint-dir "$run" \
+        --output-dir "$run/evaluation"
+    done
+  done
+)
+```
+
+Each run saves its macro-F1 in `evaluation/metrics.json` under `macro_average.f1`. Average the three fold scores for each learning rate. The selected learning rate was `0.0001`.
+
+### Reproduce the baseline comparison
+
+The baseline scripts use 512 features per image from a fixed ImageNet-pretrained ResNet18. Feature scaling is fitted on each fold’s training data during cross-validation and on the full development set for the final fit. The script selects the L2 penalty for logistic regression and the neighbor count for k-NN by mean cross-validation macro-F1, then prints their held-out test scores.
+
+```bash
+python src/extract_features.py --split development
+python src/extract_features.py --split test
+python src/run_baselines.py
+```
+
+### Reproduce the final cascade test
+
+The detector trains on all 880 development images. The risk classifier trains on the 367 fire images in that set.
+
+```bash
+(
+  set -e
+  for stage in detector risk; do
+    python src/train.py --stage "$stage" \
+      --train-csv splits/development.csv \
+      --lr 0.0001 --epochs 5 --fixed-epochs \
+      --checkpoint-dir outputs/final/cascade
+  done
+
+  python src/evaluate.py --split test \
+    --checkpoint-dir outputs/final/cascade \
+    --output-dir outputs/final/cascade/evaluation
+)
+```
+
+Rerunning these commands replaces checkpoints and results at the specified output paths. Scores may vary across hardware and software versions.
+
 ## Known Limitations
 
 - The risk model overfits: training accuracy reaches 100%, while validation performance declines after epoch 3. Selecting an earlier checkpoint does not solve the underlying issue.
@@ -374,6 +438,9 @@ Full-cascade validation results:
 | `src/predict.py` | Load checkpoints and predict one image through the cascade |
 | `src/demo.py` | Display validation examples filtered by prediction |
 | `src/evaluate.py` | Evaluate the full cascade and save results |
+| `src/make_folds.py` | Generate the stratified folds |
+| `src/extract_features.py` | Save fixed ResNet18 features |
+| `src/run_baselines.py` | Tune and evaluate logistic regression and k-NN |
 
 `export_labels.py` and `split_data.py` overwrite their CSV outputs. They are preparation utilities, not commands to rerun before every prediction or training run.
 
