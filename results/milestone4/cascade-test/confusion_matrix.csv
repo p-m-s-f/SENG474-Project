@@ -1,0 +1,5 @@
+actual/predicted,no_fire,fire_low,fire_medium,fire_high
+no_fire,90,2,0,0
+fire_low,2,10,6,0
+fire_medium,6,5,23,2
+fire_high,4,0,3,7

@@ -1,0 +1,110 @@
+{
+  "split": "test",
+  "split_sha256": "e837efc00a8e5c1356f4def8ba68ba0764439e4533dc34aa0134797552724565",
+  "images": 160,
+  "device": "mps",
+  "torch_version": "2.14.1",
+  "accuracy": 0.8125,
+  "per_class": {
+    "no_fire": {
+      "precision": 0.8823529411764706,
+      "recall": 0.9782608695652174,
+      "f1": 0.9278350515463919,
+      "support": 92,
+      "predicted_count": 102
+    },
+    "fire_low": {
+      "precision": 0.5882352941176471,
+      "recall": 0.5555555555555556,
+      "f1": 0.5714285714285715,
+      "support": 18,
+      "predicted_count": 17
+    },
+    "fire_medium": {
+      "precision": 0.71875,
+      "recall": 0.6388888888888888,
+      "f1": 0.676470588235294,
+      "support": 36,
+      "predicted_count": 32
+    },
+    "fire_high": {
+      "precision": 0.7777777777777778,
+      "recall": 0.5,
+      "f1": 0.6086956521739131,
+      "support": 14,
+      "predicted_count": 9
+    }
+  },
+  "macro_average": {
+    "precision": 0.7417790032679739,
+    "recall": 0.6681763285024155,
+    "f1": 0.6961074658460427
+  },
+  "binary_detection": {
+    "true_positive": 56,
+    "true_negative": 90,
+    "false_alarms": 2,
+    "missed_fires": 12,
+    "false_alarm_rate": 0.021739130434782608,
+    "missed_fire_rate": 0.17647058823529413,
+    "fire_precision": 0.9655172413793104,
+    "fire_recall": 0.8235294117647058,
+    "fire_f1": 0.888888888888889
+  },
+  "class_order": [
+    "no_fire",
+    "fire_low",
+    "fire_medium",
+    "fire_high"
+  ],
+  "confusion_matrix": [
+    [
+      90,
+      2,
+      0,
+      0
+    ],
+    [
+      2,
+      10,
+      6,
+      0
+    ],
+    [
+      6,
+      5,
+      23,
+      2
+    ],
+    [
+      4,
+      0,
+      3,
+      7
+    ]
+  ],
+  "checkpoints": {
+    "detector": {
+      "filename": "detector_best.pt",
+      "sha256": "c36f01b6847a2d0596c68a2642b05d2d5b28bf045a31fa8b02f80c4aab13e896",
+      "epoch": 5,
+      "validation_loss": null,
+      "class_names": [
+        "no_fire",
+        "fire"
+      ]
+    },
+    "risk": {
+      "filename": "risk_best.pt",
+      "sha256": "89802c14fa56a5c1b2dea98af9f3639217dc7392ba6e94272f69ba52b0bcdfcf",
+      "epoch": 5,
+      "validation_loss": null,
+      "class_names": [
+        "fire_low",
+        "fire_medium",
+        "fire_high"
+      ]
+    }
+  },
+  "zero_division_policy": "Undefined metrics reported as 0."
+}
