@@ -1,6 +1,5 @@
 import csv
 from pathlib import Path
-
 import torch
 
 project_root = Path(__file__).resolve().parent.parent
@@ -125,3 +124,42 @@ for l2, mean in mean_by_l2.items():
 
 best_l2 = max(mean_by_l2, key=mean_by_l2.get)
 print(f"Selected L2: {best_l2}")
+
+test_cache = torch.load(
+    project_root / "outputs" / "test_features.pt",
+    map_location="cpu",
+    weights_only=True,
+)
+
+if set(cache["filenames"]) & set(test_cache["filenames"]):
+    raise ValueError("Development and test feature caches overlap")
+
+development_features = cache["features"]
+development_ids = torch.tensor([label_to_id[label] for label in cache["labels"]])
+test_ids = torch.tensor([label_to_id[label] for label in test_cache["labels"]])
+
+mean = development_features.mean(dim=0)
+std = development_features.std(dim=0, unbiased=False)
+std[std < 1e-6] = 1.0
+
+development_scaled = (development_features - mean) / std
+test_scaled = (test_cache["features"] - mean) / std
+
+logistic_predictions = logistic_predict(
+    development_scaled, development_ids, test_scaled, best_l2
+)
+
+distances = torch.cdist(test_scaled, development_scaled)
+neighbors = distances.argsort(dim=1, stable=True)[:, :best_k]
+votes = torch.nn.functional.one_hot(
+    development_ids[neighbors], num_classes=len(class_names)
+)
+knn_predictions = votes.sum(dim=1).argmax(dim=1)
+
+for name, predictions in [
+    (f"Logistic regression (L2={best_l2})", logistic_predictions),
+    (f"k-NN (k={best_k})", knn_predictions),
+]:
+    accuracy = (predictions == test_ids).float().mean().item()
+    macro_f1 = macro_f1_score(test_ids, predictions)
+    print(f"{name}: test accuracy {accuracy:.2%}, test macro-F1 {macro_f1:.2%}")
