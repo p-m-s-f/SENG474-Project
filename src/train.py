@@ -170,7 +170,7 @@ def main():
                 },
                 checkpoint_dir / f"{stage}_best.pt",
             )
-            print(f"Saved best {stage} checkpoint")
+            print(f"Saved {stage} checkpoint")
 
 if __name__ == "__main__":
     main()
