@@ -63,6 +63,8 @@ For a first run
 
 The quickstart checks prerequisites and demonstrates the prepared system. It does not install packages, download data or weights, or train models.
 
+Before cloning the repository, ensure that you have at least 30 MB of storage free, as well as an additional 21 GB for downloading and extracting [the dataset](#preparing-the-images).
+
 ### 1. Cloning the Repository
 
 ```bash
